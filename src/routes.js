@@ -5,8 +5,8 @@ require("./middlewares/passport")();
 
 const UserController = require("./controllers/UserController");
 const PlaceController = require("./controllers/PlaceController");
-// const VoteController = require("./controllers/VoteController");
-// const CommentController = require("./controllers/CommentController");
+const VoteController = require("./controllers/VoteController");
+const CommentController = require("./controllers/CommentController");
 
 //USER ROUTES
 routes.post(
@@ -20,22 +20,21 @@ routes.post(
   UserController.authenticateFacebook
 );
 routes.get("/nearbySearch", PlaceController.nearbySearch);
+routes.get("/places/:id", PlaceController.view);
+
 //USER NEEDED TO BE SIGN IN
-// routes.use(authUserMiddleware);
+routes.use(authUserMiddleware);
 
 //USERS ROUTES
-// routes.patch("/users/:id", UserController.update); //NEED DATA(USER SCHEMA)
+routes.patch("/users/:id", UserController.update); //NEED DATA(USER SCHEMA)
 //ARTICLES ROUTES
-// routes.get("/articles", ArticleController.index);
-// routes.get("/articles/:id/", ArticleController.show);
-// routes.post("/articles/:id/up", VoteController.up);
-// routes.post("/articles/:id/down", VoteController.down);
+routes.post("/votes/:id/", VoteController.create);
+routes.delete("/votes/:id/", VoteController.delete);
 
 //COMMENTS ROUTES
-// routes.post("/comments/:id/up", CommentController.up);
-// routes.post("/comments/:id/down", CommentController.down);
-// routes.post("/comments", CommentController.create); //NEED TEXT, ARTICLE(ID), COMMENTID(FK OPTIONAL)
-// routes.patch("/comments/:id", CommentController.update); //NEED COMMENT(TEXT),  ARTICLE(ID)
-// routes.delete("/comments/:id", CommentController.delete);
+routes.post("/comments", CommentController.create); //NEED TEXT, ARTICLE(ID), COMMENTID(FK OPTIONAL)
+routes.patch("/comments/:id", CommentController.update); //NEED COMMENT(TEXT),  ARTICLE(ID)
+routes.delete("/comments/:id", CommentController.delete); // ID = COMMENT ID
+routes.get("/comments/:id", CommentController.getByPlace); // ID = PLACEID
 
 module.exports = routes;
