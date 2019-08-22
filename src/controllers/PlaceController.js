@@ -10,7 +10,7 @@ class PlaceController {
   async nearbySearch(req, res) {
     const { location, pagetoken, keyword } = req.body;
     Places.nearbysearch({
-      location: location, // LatLon delimited by" -28.934883,-49.485840"
+      location, // LatLon delimited by" -28.934883,-49.485840"
       type: ["bar", "cafe", "restaurant"], // Undefined type will return all types
       rankby: "distance", // See google docs for different possible values
       pagetoken: pagetoken || null,
@@ -19,7 +19,9 @@ class PlaceController {
       .then(result => {
         return res.send(result);
       })
-      .catch(e => {});
+      .catch(e => {
+        return res.status(400).send(e);
+      });
   }
   async view(req, res) {
     const { placeId } = req.params;
