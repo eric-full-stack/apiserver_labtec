@@ -8,7 +8,7 @@ Places.debug = false; // boolean;
 
 class PlaceController {
   async nearbySearch(req, res) {
-    const { location, pagetoken, keyword } = req.body;
+    const { location, pagetoken, keyword } = req.query;
     Places.nearbysearch({
       location, // LatLon delimited by" -28.934883,-49.485840"
       type: ["bar", "cafe", "restaurant"], // Undefined type will return all types
@@ -20,11 +20,13 @@ class PlaceController {
         return res.send(result);
       })
       .catch(e => {
-        return res.status(400).send(e);
+        console.log(e);
+        return res.send(false);
       });
   }
   async view(req, res) {
-    const { placeId } = req.params;
+    const { id: placeId } = req.params;
+
     Places.details({ placeid: placeId })
       .then(result => {
         const place = Place.findOne({ _id: placeId });
@@ -35,7 +37,9 @@ class PlaceController {
           return res.send(Place.getFullInfo({ placeId }));
         }
       })
-      .catch(e => {});
+      .catch(e => {
+        return res.status(400);
+      });
   }
 }
 
