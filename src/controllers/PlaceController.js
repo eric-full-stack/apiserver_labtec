@@ -1,6 +1,7 @@
 const Place = require("../models/Place").model;
 const log = require("log-to-file");
 const Places = require("google-places-web").default;
+const axios = require("axios");
 
 // Setup
 Places.apiKey = process.env.GOOGLE_PLACES_KEY;
@@ -9,8 +10,14 @@ Places.debug = false; // boolean;
 class PlaceController {
   async nearbySearch(req, res) {
     const { location, pagetoken, keyword } = req.query;
+
+    const response = await Places.textsearch({
+      query: location
+    });
+    let coord = response[0].geometry.location;
+
     Places.nearbysearch({
-      location, // LatLon delimited by" -28.934883,-49.485840"
+      location: `${coord.lat},${coord.lng}`, // LatLon delimited by" -28.934883,-49.485840"
       type: ["bar", "cafe", "restaurant"], // Undefined type will return all types
       rankby: "distance", // See google docs for different possible values
       pagetoken: pagetoken || null,
