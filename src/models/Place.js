@@ -14,6 +14,7 @@ function formatDate(fullDate) {
 
 const PlaceSchema = new mongoose.Schema(
   {
+    place_id: String,
     totalVotes: Number,
     name: String,
     photos: mongoose.Schema.Types.Mixed,
@@ -35,7 +36,7 @@ const PlaceSchema = new mongoose.Schema(
 
 PlaceSchema.statics.getFullInfo = async function(placeId) {
   try {
-    let place = await this.findById({ _id: placeId }).lean();
+    let place = await this.findOne({ _id: placeId }).lean();
     if (place) {
       const totalVotes = await Vote.countDocuments({
         place: placeId

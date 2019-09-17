@@ -1,7 +1,5 @@
 const Place = require("../models/Place").model;
-const log = require("log-to-file");
 const Places = require("google-places-web").default;
-const axios = require("axios");
 
 // Setup
 Places.apiKey = process.env.GOOGLE_PLACES_KEY;
@@ -33,20 +31,28 @@ class PlaceController {
   }
   async view(req, res) {
     const { id: placeId } = req.params;
+    const place = await Place.findOne({ place_id: placeId }).lean();
 
-    Places.details({ placeid: placeId })
-      .then(result => {
-        const place = Place.findOne({ _id: placeId });
-        if (!place) {
-          Place.create(result);
-          return res.send(result);
-        } else {
-          return res.send(Place.getFullInfo({ placeId }));
-        }
-      })
-      .catch(e => {
-        return res.status(400);
-      });
+    if (!place) {
+      let newPlace = await Place.create({ place_id: placeId });
+
+      Places.details({ placeid: placeId })
+        .then(async result => {
+          let sPlace = await Place.findOneAndUpdate(
+            { _id: newPlace._id },
+            result,
+            {
+              new: true
+            }
+          );
+          return res.send(sPlace);
+        })
+        .catch(e => {
+          return res.status(400);
+        });
+    } else {
+      return res.send(place);
+    }
   }
 }
 
