@@ -29,7 +29,7 @@ class UserController {
       })
         .then(user => {
           user.password = undefined;
-          res.send({ user, token: generateToken(user) });
+          res.send({ profile: user, token: generateToken(user) });
         })
         .catch(err => {
           console.log(err);
@@ -77,7 +77,7 @@ class UserController {
 
     user.password = undefined;
 
-    res.send({ user, token: generateToken(user) });
+    res.send({ profile: user, token: generateToken(user) });
   }
 
   async authenticateFacebook(req, res) {
