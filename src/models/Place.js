@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Vote = require("./Vote").model;
 
 function formatDate(fullDate) {
   if (fullDate) {

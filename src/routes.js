@@ -19,6 +19,7 @@ routes.post(
   passport.authenticate("facebook-token", { session: false }),
   UserController.authenticateFacebook
 );
+routes.post("/authenticate/default", UserController.authenticateDefault);
 routes.post("/user", UserController.register);
 routes.get("/nearbySearch", PlaceController.nearbySearch);
 routes.get("/places/:id", PlaceController.view);
