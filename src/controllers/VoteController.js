@@ -23,6 +23,10 @@ class VoteController {
         });
 
         return res.sendStatus(200);
+      } else {
+        return res.json({
+          error: "Apenas uma avaliação permitida por usuário"
+        });
       }
     } catch (err) {
       console.log(err);

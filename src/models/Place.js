@@ -68,7 +68,7 @@ PlaceSchema.statics.getFullInfo = async function(placeId) {
 
       place.publishDate = formatDate(place.publishDate);
       place.comments = comments;
-      place.votes = sumVotes / totalVotes;
+      place.votes = sumVotes[0].amount / totalVotes;
       place.total_votes = totalVotes;
 
       return place;
