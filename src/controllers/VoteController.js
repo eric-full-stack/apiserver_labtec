@@ -9,7 +9,7 @@ class VoteController {
     try {
       const { id: placeId } = req.params;
       const { vote, description } = req.body;
-      const user = await User.findOne({ _id: req.userId }, "name,avatar");
+      const user = await User.findOne({ _id: req.userId }, "name email").lean();
       const voteObj = await Vote.findOne({
         place: ObjectId(placeId),
         "user._id": ObjectId(req.userId)
