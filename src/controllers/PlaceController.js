@@ -32,7 +32,6 @@ class PlaceController {
   async view(req, res) {
     const { id: placeId } = req.params;
     const place = await Place.findOne({ place_id: placeId }).lean();
-
     if (!place) {
       let newPlace = await Place.create({ place_id: placeId });
 
@@ -45,13 +44,15 @@ class PlaceController {
               new: true
             }
           );
-          return res.send(sPlace);
+          const fullInfoPlace = await Place.getFullInfo(sPlace._id);
+          return res.send(fullInfoPlace);
         })
         .catch(e => {
           return res.status(400);
         });
     } else {
-      return res.send(place);
+      const fullInfoPlace = await Place.getFullInfo(place._id);
+      return res.send(fullInfoPlace);
     }
   }
 }
