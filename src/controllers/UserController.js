@@ -1,5 +1,6 @@
 const User = require("../models/User").model;
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const log = require("log-to-file");
 
 function generateToken(user) {
@@ -13,6 +14,35 @@ function generateToken(user) {
 }
 
 class UserController {
+  async register(req, res) {
+    try {
+      const { name, email, password, age } = req.body;
+      if (await User.findOne({ email }).lean())
+        return res.send({ error: "User already exists." });
+
+      await User.create({
+        name,
+        email,
+        age,
+        password,
+        provider: "default"
+      })
+        .then(user => {
+          user.password = undefined;
+          res.send({ user, token: generateToken(user) });
+        })
+        .catch(err => {
+          console.log(err);
+          log(err, "./logs/user-logs.log");
+          return res.send({ error: "Registration failed." });
+        });
+    } catch (err) {
+      console.log(err);
+      log(err, "./logs/user-logs.log");
+      return res.json({ error: err.message });
+    }
+  }
+
   async update(req, res) {
     try {
       const { name, age, gender, state, city } = req.body;
@@ -36,6 +66,18 @@ class UserController {
       log(err, "./logs/user-logs.log");
       return res.json({ error: err.message });
     }
+  }
+
+  async authenticate(req, res) {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) return res.send({ error: "User not found" });
+    if (!(await bcrypt.compare(password, user.password)))
+      return res.send({ error: "Invalid password" });
+
+    user.password = undefined;
+
+    res.send({ user, token: generateToken(user) });
   }
 
   async authenticateFacebook(req, res) {
