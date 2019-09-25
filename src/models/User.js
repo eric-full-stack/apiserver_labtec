@@ -15,6 +15,8 @@ const UserSchema = new mongoose.Schema({
   },
   type: { type: String, required: true, default: "user" },
   state: mongoose.Schema.Types.Mixed,
+  nickname: String,
+  phone: String,
   city: String,
   cpf: String,
   gender: String,

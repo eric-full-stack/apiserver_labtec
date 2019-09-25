@@ -1,4 +1,5 @@
 const User = require("../models/User").model;
+const Vote = require("../models/Vote").model;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const log = require("log-to-file");
@@ -45,19 +46,24 @@ class UserController {
 
   async update(req, res) {
     try {
-      const { name, age, gender, state, city } = req.body;
+      const { name, age, nickname, phone } = req.body;
       if (req.params.id != req.userId)
         return res.sendStatus(401, { error: "Not you!" });
       let user = await User.findOne({ _id: req.params.id });
+
       if (user) {
         user.name = name;
         user.age = age;
-        user.gender = gender;
-        user.state = state;
-        user.city = city;
+        user.nickname = nickname;
+        user.phone = phone;
         user.ip = req.ipInfo;
         await user.save();
-        return res.send();
+        await Vote.updateMany(
+          { "user._id": user._id },
+          { "user.name": nickname }
+        );
+
+        return res.sendStatus(200);
       } else {
         return res.status(404).send({ error: "User not found." });
       }
