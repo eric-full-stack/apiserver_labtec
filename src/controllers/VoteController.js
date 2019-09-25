@@ -5,6 +5,20 @@ const log = require("log-to-file");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 class VoteController {
+  async index(req, res) {
+    try {
+      const votes = await Vote.find({
+        "user._id": ObjectId(req.userId)
+      })
+        .lean()
+        .populate("place", "name");
+      return res.send(votes);
+    } catch (err) {
+      console.log(err);
+      log(err, "./logs/votes-logs.log");
+      return res.json({ error: err.message });
+    }
+  }
   async create(req, res) {
     try {
       const { id: placeId } = req.params;
