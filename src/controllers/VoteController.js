@@ -52,6 +52,29 @@ class VoteController {
     }
   }
 
+  async update(req, res) {
+    try {
+      const { id: voteId } = req.params;
+      const { vote, description } = req.body;
+      const user = await User.findOne(
+        { _id: req.userId },
+        "name email avatar"
+      ).lean();
+      const voteObj = await Vote.findOneAndUpdate(
+        {
+          _id: ObjectId(voteId),
+          "user._id": ObjectId(req.userId)
+        },
+        { vote, description }
+      );
+      return res.sendStatus(200);
+    } catch (err) {
+      console.log(err);
+      log(err, "./logs/votes-logs.log");
+      return res.json({ error: err.message });
+    }
+  }
+
   async delete(req, res) {
     try {
       const { id: placeId } = req.params;

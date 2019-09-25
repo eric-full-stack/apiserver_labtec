@@ -31,6 +31,7 @@ routes.use(authUserMiddleware);
 routes.patch("/users/:id", UserController.update); //NEED DATA(USER SCHEMA)
 //ARTICLES ROUTES
 routes.post("/votes/:id/", VoteController.create);
+routes.patch("/votes/:id/", VoteController.update);
 routes.get("/votes", VoteController.index);
 routes.delete("/votes/:id/", VoteController.delete);
 
