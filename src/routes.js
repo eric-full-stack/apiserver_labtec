@@ -7,6 +7,7 @@ const UserController = require("./controllers/UserController");
 const PlaceController = require("./controllers/PlaceController");
 const VoteController = require("./controllers/VoteController");
 const CommentController = require("./controllers/CommentController");
+const FavoriteController = require("./controllers/FavoriteController");
 
 //USER ROUTES
 routes.post(
@@ -42,5 +43,9 @@ routes.post("/comments", CommentController.create); //NEED TEXT, ARTICLE(ID), CO
 routes.patch("/comments/:id", CommentController.update); //NEED COMMENT(TEXT),  ARTICLE(ID)
 routes.delete("/comments/:id", CommentController.delete); // ID = COMMENT ID
 routes.get("/comments/:id", CommentController.getByPlace); // ID = PLACEID
+
+//FAVORITES ROUTES
+routes.post("/favorites/toggle", FavoriteController.toggle); //NEED PLACEID
+routes.get("/favorites", FavoriteController.index);
 
 module.exports = routes;
