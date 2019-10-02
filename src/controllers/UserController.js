@@ -74,6 +74,28 @@ class UserController {
     }
   }
 
+  async updatePassword(req, res) {
+    try {
+      const { password } = req.body;
+      if (req.params.id != req.userId)
+        return res.sendStatus(401, { error: "Not you!" });
+      let user = await User.findOne({ _id: req.params.id });
+
+      if (user) {
+        user.password = password;
+        await user.save();
+
+        return res.sendStatus(200);
+      } else {
+        return res.status(404).send({ error: "User not found." });
+      }
+    } catch (err) {
+      console.log(err);
+      log(err, "./logs/user-logs.log");
+      return res.json({ error: err.message });
+    }
+  }
+
   async authenticateDefault(req, res) {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");

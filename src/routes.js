@@ -29,6 +29,7 @@ routes.use(authUserMiddleware);
 
 //USERS ROUTES
 routes.patch("/users/:id", UserController.update); //NEED DATA(USER SCHEMA)
+routes.patch("/users/:id/password", UserController.updatePassword); //NEED NEWPASSWORD
 //ARTICLES ROUTES
 routes.post("/votes/:id/", VoteController.create);
 routes.patch("/votes/:id/", VoteController.update);
