@@ -46,21 +46,22 @@ class UserController {
 
   async update(req, res) {
     try {
-      const { name, age, nickname, phone } = req.body;
+      const { name, age, nickname, phone, avatar } = req.body;
       if (req.params.id != req.userId)
         return res.sendStatus(401, { error: "Not you!" });
       let user = await User.findOne({ _id: req.params.id });
 
       if (user) {
-        user.name = name;
-        user.age = age;
-        user.nickname = nickname;
-        user.phone = phone;
+        user.name = name ? name : user.name;
+        user.age = age ? age : user.age;
+        user.nickname = nickname ? nickname : user.nickname;
+        user.phone = phone ? phone : user.phone;
+        user.avatar = avatar == null ? avatar : user.avatar;
         user.ip = req.ipInfo;
         await user.save();
         await Vote.updateMany(
           { "user._id": user._id },
-          { "user.name": nickname }
+          { "user.name": user.nickname, "user.avatar": user.avatar }
         );
 
         return res.sendStatus(200);
