@@ -34,6 +34,7 @@ class PlaceController {
   }
   async view(req, res) {
     const { id: placeId } = req.params;
+
     const place = await Place.findOne({ place_id: placeId }).lean();
     if (!place) {
       let newPlace = await Place.create({ place_id: placeId });
@@ -47,14 +48,15 @@ class PlaceController {
               new: true
             }
           );
-          const fullInfoPlace = await Place.getFullInfo(sPlace._id);
+
+          const fullInfoPlace = await Place.getFullInfo(sPlace._id, req.userId);
           return res.send(fullInfoPlace);
         })
         .catch(e => {
           return res.status(400);
         });
     } else {
-      const fullInfoPlace = await Place.getFullInfo(place._id);
+      const fullInfoPlace = await Place.getFullInfo(place._id, req.userId);
       return res.send(fullInfoPlace);
     }
   }

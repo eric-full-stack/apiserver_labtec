@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Vote = require("./Vote").model;
+const Favorite = require("./Favorite").model;
 const ObjectId = require("mongoose").Types.ObjectId;
 
 function formatDate(fullDate) {
@@ -36,7 +37,7 @@ const PlaceSchema = new mongoose.Schema(
   }
 );
 
-PlaceSchema.statics.getFullInfo = async function(placeId) {
+PlaceSchema.statics.getFullInfo = async function(placeId, userId = null) {
   try {
     let place = await this.findOne({ _id: placeId }).lean();
     if (place) {
@@ -66,8 +67,14 @@ PlaceSchema.statics.getFullInfo = async function(placeId) {
         sort: { createdAt: -1 }
       }).lean();
 
+      const favorited = await Favorite.findOne({
+        place: placeId,
+        "user._id": ObjectId(userId)
+      }).lean();
+
       place.publishDate = formatDate(place.publishDate);
       place.comments = comments;
+      place.favorited = favorited ? true : false;
       place.votes = sumVotes.length > 0 ? sumVotes[0].amount / totalVotes : 0;
       place.total_votes = totalVotes;
 
