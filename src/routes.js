@@ -22,6 +22,7 @@ routes.post(
 routes.post("/authenticate/default", UserController.authenticateDefault);
 routes.post("/user", UserController.register);
 routes.get("/nearbySearch", PlaceController.nearbySearch);
+routes.get("/textSearch", PlaceController.textSearch);
 routes.get("/places/:id", PlaceController.view);
 
 //USER NEEDED TO BE SIGN IN

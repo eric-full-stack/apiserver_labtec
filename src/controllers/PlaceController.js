@@ -9,13 +9,8 @@ class PlaceController {
   async nearbySearch(req, res) {
     const { location, pagetoken, keyword } = req.query;
 
-    const response = await Places.textsearch({
-      query: location
-    });
-    let coord = response[0].geometry.location;
-
     Places.nearbysearch({
-      location: `${coord.lat},${coord.lng}`, // LatLon delimited by" -28.934883,-49.485840"
+      location, // LatLon delimited by" -28.934883,-49.485840"
       type: ["bar", "cafe", "restaurant"], // Undefined type will return all types
       rankby: "distance", // See google docs for different possible values
       pagetoken: pagetoken || null,
@@ -28,6 +23,14 @@ class PlaceController {
         console.log(e);
         return res.send(false);
       });
+  }
+  async textSearch(req, res) {
+    const { location } = req.query;
+
+    const response = await Places.textsearch({
+      query: location
+    });
+    return res.send(response);
   }
   async view(req, res) {
     const { id: placeId } = req.params;
