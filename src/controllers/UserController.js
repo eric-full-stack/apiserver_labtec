@@ -50,7 +50,7 @@ class UserController {
       if (req.params.id != req.userId)
         return res.sendStatus(401, { error: "Not you!" });
       let user = await User.findOne({ _id: req.params.id });
-
+      // console.log(user);
       if (user) {
         user.name = name ? name : user.name;
         user.age = age ? age : user.age;
@@ -59,9 +59,13 @@ class UserController {
         user.avatar = avatar == null ? avatar : user.avatar;
         user.ip = req.ipInfo;
         await user.save();
+        console.log(user.nickname);
         await Vote.updateMany(
           { "user._id": user._id },
-          { "user.name": user.nickname, "user.avatar": user.avatar }
+          {
+            "user.name": user.nickname || user.name,
+            "user.avatar": user.avatar
+          }
         );
 
         return res.sendStatus(200);
