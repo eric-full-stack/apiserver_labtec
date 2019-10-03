@@ -121,7 +121,7 @@ class UserController {
       let user = req.user;
       user.ip = req.ipInfo;
       user.save();
-
+      user = await User.findOne({ _id: user._id }).lean();
       return res.send({ profile: user, token: generateToken(req.user) });
     } catch (err) {
       console.log(err);
