@@ -8,13 +8,31 @@ Places.debug = false; // boolean;
 class PlaceController {
   async nearbySearch(req, res) {
     const { location, pagetoken, keyword } = req.query;
+    try {
+      Places.nearbysearch({
+        location, // LatLon delimited by" -28.934883,-49.485840"
+        type: ["bar", "cafe", "restaurant"], // Undefined type will return all types
+        rankby: "distance", // See google docs for different possible values
+        pagetoken: pagetoken || null,
+        keyword: keyword || null
+      })
+        .then(result => {
+          return res.send(result);
+        })
+        .catch(e => {
+          console.log(e);
+          return res.send(false);
+        });
+    } catch (e) {
+      console.log(e);
+      return res.send(false);
+    }
+  }
+  async textSearch(req, res) {
+    const { location } = req.query;
 
-    Places.nearbysearch({
-      location, // LatLon delimited by" -28.934883,-49.485840"
-      type: ["bar", "cafe", "restaurant"], // Undefined type will return all types
-      rankby: "distance", // See google docs for different possible values
-      pagetoken: pagetoken || null,
-      keyword: keyword || null
+    const response = await Places.textsearch({
+      query: location
     })
       .then(result => {
         return res.send(result);
@@ -23,14 +41,6 @@ class PlaceController {
         console.log(e);
         return res.send(false);
       });
-  }
-  async textSearch(req, res) {
-    const { location } = req.query;
-
-    const response = await Places.textsearch({
-      query: location
-    });
-    return res.send(response);
   }
   async view(req, res) {
     const { id: placeId } = req.params;
