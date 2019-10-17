@@ -34,7 +34,8 @@ class PlaceController {
     await Places.textsearch({
       query,
       location,
-      type: ["bar", "cafe", "restaurant"]
+      type: ["bar", "cafe", "restaurant"],
+      radius: "5000"
     })
       .then(result => {
         return res.send(result);
