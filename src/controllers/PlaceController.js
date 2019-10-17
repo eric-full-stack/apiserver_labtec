@@ -29,10 +29,12 @@ class PlaceController {
     }
   }
   async textSearch(req, res) {
-    const { location } = req.query;
+    const { location, query } = req.query;
 
-    const response = await Places.textsearch({
-      query: location
+    await Places.textsearch({
+      query,
+      location,
+      type: ["bar", "cafe", "restaurant"]
     })
       .then(result => {
         return res.send(result);
