@@ -35,7 +35,9 @@ class PlaceController {
       query,
       location,
       type: ["bar", "cafe", "restaurant"],
-      radius: "5000"
+      radius: "5000",
+      region: ".br",
+      language: "pt-BR"
     })
       .then(result => {
         return res.send(result);
