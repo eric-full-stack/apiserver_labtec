@@ -27,7 +27,7 @@ class PlaceController {
           }
           return res.send(resp.data);
         } else {
-          return res.send(places);
+          return res.send({ results: places });
         }
       } else {
         const resp = await axios.get(
