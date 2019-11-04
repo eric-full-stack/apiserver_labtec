@@ -18,6 +18,8 @@ function formatDate(fullDate) {
 const PlaceSchema = new mongoose.Schema(
   {
     place_id: String,
+    latitude: Number,
+    longitude: Number,
     totalVotes: Number,
     name: String,
     photos: mongoose.Schema.Types.Mixed,

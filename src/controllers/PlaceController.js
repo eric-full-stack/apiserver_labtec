@@ -1,51 +1,29 @@
 const Place = require("../models/Place").model;
-const Places = require("google-places-web").default;
-
-// Setup
-Places.apiKey = process.env.GOOGLE_PLACES_KEY;
-Places.debug = false; // boolean;
+const axios = require("axios");
 
 class PlaceController {
   async nearbySearch(req, res) {
     const { location, pagetoken, keyword } = req.query;
     try {
-      Places.nearbysearch({
-        location, // LatLon delimited by" -28.934883,-49.485840"
-        type: ["bar", "cafe", "restaurant"], // Undefined type will return all types
-        rankby: "distance", // See google docs for different possible values
-        pagetoken: pagetoken || null,
-        keyword: keyword || null
-      })
-        .then(result => {
-          return res.send(result);
-        })
-        .catch(e => {
-          console.log(e);
-          return res.send(false);
-        });
+      const resp = await axios.get(
+        !pagetoken
+          ? `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=5000&type=restaurant&key=${process.env.GOOGLE_PLACES_KEY}`
+          : `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&pagetoken=${pagetoken}&radius=5000&type=restaurant&key=${process.env.GOOGLE_PLACES_KEY}`
+      );
+      return res.send(resp.data);
     } catch (e) {
       console.log(e);
       return res.send(false);
     }
   }
   async textSearch(req, res) {
-    const { location, query } = req.query;
-
-    await Places.textsearch({
-      query,
-      location,
-      type: ["bar", "cafe", "restaurant"],
-      radius: "5000",
-      region: ".br",
-      language: "pt-BR"
-    })
-      .then(result => {
-        return res.send(result);
-      })
-      .catch(e => {
-        console.log(e);
-        return res.send(false);
-      });
+    const { location, query, pagetoken } = req.query;
+    const resp = await axios.get(
+      !pagetoken
+        ? `https://maps.googleapis.com/maps/api/place/textsearch/json?location=${location}&query=${query}&radius=5000&region=.br&language=pt-BR&type=restaurant&key=${process.env.GOOGLE_PLACES_KEY}`
+        : `https://maps.googleapis.com/maps/api/place/textsearch/json?location=${location}&query=${query}&pagetoken=${pagetoken}&radius=5000&type=restaurant&key=${process.env.GOOGLE_PLACES_KEY}`
+    );
+    return res.send(resp.data);
   }
   async view(req, res) {
     const { id: placeId } = req.params;
@@ -53,23 +31,20 @@ class PlaceController {
     const place = await Place.findOne({ place_id: placeId }).lean();
     if (!place) {
       let newPlace = await Place.create({ place_id: placeId });
-
-      Places.details({ placeid: placeId })
-        .then(async result => {
-          let sPlace = await Place.findOneAndUpdate(
-            { _id: newPlace._id },
-            result,
-            {
-              new: true
-            }
-          );
-
-          const fullInfoPlace = await Place.getFullInfo(sPlace._id, req.userId);
-          return res.send(fullInfoPlace);
-        })
-        .catch(e => {
-          return res.status(400);
-        });
+      const resp = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.GOOGLE_PLACES_KEY}`
+      );
+      if (resp.data.status == "OK") {
+        let sPlace = await Place.findOneAndUpdate(
+          { _id: newPlace._id },
+          resp.data.result,
+          {
+            new: true
+          }
+        );
+        const fullInfoPlace = await Place.getFullInfo(sPlace._id, req.userId);
+        return res.send(fullInfoPlace);
+      }
     } else {
       const fullInfoPlace = await Place.getFullInfo(place._id, req.userId);
       return res.send(fullInfoPlace);
