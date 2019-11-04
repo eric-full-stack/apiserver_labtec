@@ -18,12 +18,25 @@ class PlaceController {
   }
   async textSearch(req, res) {
     const { location, query, pagetoken } = req.query;
-    const resp = await axios.get(
-      !pagetoken
-        ? `https://maps.googleapis.com/maps/api/place/textsearch/json?location=${location}&query=${query}&radius=5000&region=.br&language=pt-BR&type=restaurant&key=${process.env.GOOGLE_PLACES_KEY}`
-        : `https://maps.googleapis.com/maps/api/place/textsearch/json?location=${location}&query=${query}&pagetoken=${pagetoken}&radius=5000&type=restaurant&key=${process.env.GOOGLE_PLACES_KEY}`
-    );
-    return res.send(resp.data);
+    try {
+      const resp = await axios.get(
+        !pagetoken
+          ? `https://maps.googleapis.com/maps/api/place/textsearch/json?location=${location}&query=${encodeURI(
+              query
+            )}&radius=5000&region=.br&language=pt-BR&type=restaurant&key=${
+              process.env.GOOGLE_PLACES_KEY
+            }`
+          : `https://maps.googleapis.com/maps/api/place/textsearch/json?location=${location}&query=${encodeURI(
+              query
+            )}&pagetoken=${pagetoken}&radius=5000&type=restaurant&key=${
+              process.env.GOOGLE_PLACES_KEY
+            }`
+      );
+      return res.send(resp.data);
+    } catch (e) {
+      console.log(e);
+      return res.send(false);
+    }
   }
   async view(req, res) {
     const { id: placeId } = req.params;
