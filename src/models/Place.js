@@ -48,8 +48,8 @@ PlaceSchema.statics.getFullInfo = async function(placeId, userId = null) {
       }).lean();
 
       const my_vote = await Vote.findOne({
-        place: placeId,
-        "user._id": userId
+        place: ObjectId(placeId),
+        "user._id": ObjectId(userId)
       }).lean();
 
       const sumVotes = await Vote.aggregate([
