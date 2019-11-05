@@ -84,7 +84,7 @@ PlaceSchema.statics.getFullInfo = async function(placeId, userId = null) {
       place.favorited = favorited ? true : false;
       place.votes = sumVotes.length > 0 ? sumVotes[0].amount / totalVotes : 0;
       place.total_votes = totalVotes;
-      place.my_vote = myvote ? my_vote.vote : 0;
+      place.my_vote = my_vote ? my_vote.vote : 0;
 
       return place;
     } else {
