@@ -47,6 +47,11 @@ PlaceSchema.statics.getFullInfo = async function(placeId, userId = null) {
         place: placeId
       }).lean();
 
+      const my_vote = await Vote.findOne({
+        place: placeId,
+        "user._id": userId
+      }).lean();
+
       const sumVotes = await Vote.aggregate([
         { $match: { place: ObjectId(placeId) } },
         {
@@ -79,6 +84,7 @@ PlaceSchema.statics.getFullInfo = async function(placeId, userId = null) {
       place.favorited = favorited ? true : false;
       place.votes = sumVotes.length > 0 ? sumVotes[0].amount / totalVotes : 0;
       place.total_votes = totalVotes;
+      place.my_vote = myvote ? my_vote.vote : 0;
 
       return place;
     } else {
